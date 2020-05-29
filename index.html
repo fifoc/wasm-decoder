@@ -8,88 +8,88 @@
 </head>
 <body style="background-color: #646464">
 <div id="bcanv" style="background-color: #000000;">
-<canvas id="fif">
+    <canvas id="fif">
 
-</canvas>
+    </canvas>
 </div>
-    <input type="file" id="file-selector" accept=".fif">
-    <span><button id="buttonX" onclick="renderNow()" disabled>Render</button> <span id="rtime">NOTHING RENDERED</span> Delay: <input type="range" min="0" max="100" value="0" id="myRange"> (<span id="myRangeDisplay">0</span>)</span>
-    <script>
-        var slider = document.getElementById("myRange");
-        var output = document.getElementById("myRangeDisplay");
-        slider.oninput = function() {
-            output.innerHTML = this.value;
-        }
+<input type="file" id="file-selector" accept=".fif">
+<span><button id="buttonX" onclick="renderNow()" disabled>Render</button> <span id="rtime">NOTHING RENDERED</span> Delay: <input type="range" min="0" max="100" value="0" id="myRange"> (<span id="myRangeDisplay">0</span>)</span>
+<script>
+    var slider = document.getElementById("myRange");
+    var output = document.getElementById("myRangeDisplay");
+    slider.oninput = function() {
+        output.innerHTML = this.value;
+    }
 
-        function disableSlider(state) {
-            slider.disabled = state
-        }
-        disableSlider(false)
-        let dropArea = document.getElementById("bcanv");
-        dropArea.addEventListener('dragover', (event) => {
-            event.stopPropagation();
-            event.preventDefault();
-            // Style the drag-and-drop as a "copy file" operation.
-            event.dataTransfer.dropEffect = 'copy';
-        });
-        dropArea.addEventListener('drop', (event) => {
-            event.stopPropagation();
-            event.preventDefault();
-            const file = event.dataTransfer.files[0];
-            readFile(file)
-        });
-        dropArea = document.getElementById("fif");
-        dropArea.addEventListener('dragover', (event) => {
-            event.stopPropagation();
-            event.preventDefault();
-            // Style the drag-and-drop as a "copy file" operation.
-            event.dataTransfer.dropEffect = 'copy';
-        });
-        dropArea.addEventListener('drop', (event) => {
-            event.stopPropagation();
-            event.preventDefault();
-            const file = event.dataTransfer.files[0];
-            readFile(file)
-        });
+    function disableSlider(state) {
+        slider.disabled = state
+    }
+    disableSlider(false)
+    let dropArea = document.getElementById("bcanv");
+    dropArea.addEventListener('dragover', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        // Style the drag-and-drop as a "copy file" operation.
+        event.dataTransfer.dropEffect = 'copy';
+    });
+    dropArea.addEventListener('drop', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        readFile(file)
+    });
+    dropArea = document.getElementById("fif");
+    dropArea.addEventListener('dragover', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        // Style the drag-and-drop as a "copy file" operation.
+        event.dataTransfer.dropEffect = 'copy';
+    });
+    dropArea.addEventListener('drop', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        readFile(file)
+    });
 
-        const go = new Go();
-        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
-            go.run(result.instance);
-        });
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+        go.run(result.instance);
+    });
 
-        let dataE;
-        function changeData(a) {
-            document.getElementById("buttonX").disabled = !a
-        }
+    let dataE;
+    function changeData(a) {
+        document.getElementById("buttonX").disabled = !a
+    }
 
-        document.addEventListener("load", () => {
-            changeData(false)
-        })
-        document.getElementById('file-selector').addEventListener('change', event => {
+    document.addEventListener("load", () => {
+        changeData(false)
+    })
+    document.getElementById('file-selector').addEventListener('change', event => {
 
-            const file = event.target.files[0];
-            readFile(file)
+        const file = event.target.files[0];
+        readFile(file)
 
-        })
-        function readFile(file) {
-            const reader = new FileReader();
-            reader.addEventListener('load', event => {
-                let a = new Uint8Array(reader.result)
-                dataE = a;
-                changeData(true)
-            });
-            reader.readAsArrayBuffer(file)
-        }
-        function renderNow() {
-            disableSlider(true)
-            changeData(false)
-            renderFIF("fif", dataE, dataE.length, "rtime", parseInt(slider.value))
+    })
+    function readFile(file) {
+        const reader = new FileReader();
+        reader.addEventListener('load', event => {
+            let a = new Uint8Array(reader.result)
+            dataE = a;
             changeData(true)
-        }
-        function finished() {
-            disableSlider(false)
-        }
-    </script>
+        });
+        reader.readAsArrayBuffer(file)
+    }
+    function renderNow() {
+        disableSlider(true)
+        renderFIF("fif", dataE, dataE.length, "rtime", parseInt(slider.value))
+        changeData(false)
+    }
+    function finished() {
+        disableSlider(false)
+        changeData(true)
+    }
+</script>
 </body>
 </html>
 
