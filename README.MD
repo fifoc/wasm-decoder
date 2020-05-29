@@ -20,5 +20,7 @@ lengthOfArray: fifByteArray.length \
 debugTextID: ID of a HTML Element of which the innerText will be set to debug information (time taken to process data, etc.) \
 POPdelay: If you wish to slow down the rendering of FIFs, you may provide a delay in milliseconds in this variable, and after every FIF operation the decoderw ill sleep for `POPDELAY`ms
 
-# index.html
+## index.html
 The provided index.html shows you (not necessarely with the best coding practices) how to use this library.
+
+## Example hosted version of index.html at https://fifoc.github.io/wasm-decoder
