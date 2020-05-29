@@ -86,6 +86,7 @@ func renderFIF(this js.Value, inputs []js.Value) interface{} {
 	}
 	delayEnabled := false
 	delay := time.Millisecond
+	var sleptTimeNS int64 = 0
 	if len(inputs) >= 5 {
 		delayEnabled = true
 		delay = time.Duration(inputs[4].Int()) * time.Millisecond
@@ -186,7 +187,9 @@ func renderFIF(this js.Value, inputs []js.Value) interface{} {
 			}
 		case 0x12:
 			{
-				br.offset++
+				we := br.readByte()
+				time.Sleep(time.Duration(we * 10) * time.Millisecond)
+				sleptTimeNS += (int64(we) * 10) * 1000 * 1000
 			}
 		case 0x13:
 			{
@@ -218,7 +221,7 @@ func renderFIF(this js.Value, inputs []js.Value) interface{} {
 
 	taken := now.UnixNano() - time.Now().UnixNano()
 	if len(inputs) >= 4 {
-		js.Global().Get("document").Call("getElementById", inputs[3].String()).Set("innerText", fmt.Sprintf("Render time: %.2fms, Copy time: %.2fms", math.Abs(float64(taken))/1000000, math.Abs(float64(nowg))/1000000)) // DONT QUESTION THE A B S
+		js.Global().Get("document").Call("getElementById", inputs[3].String()).Set("innerText", fmt.Sprintf("Render time: %.2fms, Copy time: %.2fms, Slept time: %.2fms", math.Abs(float64(taken)-float64(sleptTimeNS))/1000000, math.Abs(float64(nowg))/1000000, math.Abs(float64(sleptTimeNS))/1000000)) // DONT QUESTION THE A B S
 	}
 
 	if !js.Global().Get("finished").IsNull() {
